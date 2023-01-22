@@ -1,13 +1,14 @@
 package app.jersonb.mysimplelist.views
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.jersonb.mysimplelist.databinding.ProductItemBinding
 import app.jersonb.mysimplelist.extensions.loadImage
 import app.jersonb.mysimplelist.models.Product
+import app.jersonb.mysimplelist.models.ProductDto
+import app.jersonb.mysimplelist.extensions.toEntity
 
 class ProductViewAdapter(
     private val context: Context,
@@ -61,9 +62,13 @@ class ProductViewAdapter(
 
     override fun getItemCount(): Int = products.size
 
-    fun update(products: List<Product>) {
+    fun update(products: List<ProductDto>) {
         this.products.clear()
-        this.products.addAll(products)
+        this.products.addAll(
+            products.map { productDto ->
+                productDto.toEntity()
+            })
+
         notifyDataSetChanged()
     }
 }

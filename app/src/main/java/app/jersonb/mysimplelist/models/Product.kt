@@ -17,8 +17,14 @@ data class Product(
 
     @IgnoredOnParcel
     var isValid: Boolean = false
-    val formattedValue:String =NumberFormat.getCurrencyInstance(Locale("pt","br")).format(value)
-    constructor(name: String, description: String, value: String = "0.0", image: String?=null) : this(
+    val formattedValue: String = NumberFormat.getCurrencyInstance(Locale("pt", "br")).format(value)
+
+    constructor(
+        name: String,
+        description: String,
+        value: String = "0.0",
+        image: String? = null
+    ) : this(
         name,
         description,
         value.ifBlank { "0.0" }.toBigDecimal(),
@@ -26,16 +32,18 @@ data class Product(
     )
 
     init {
-        require(name.length in 4..10) {
-            "Nome precisa ser válido"
-        }
-        require(description.length in 10..20) {
-            "Descrição precisa ser válida"
-        }
-        require(value > BigDecimal.ZERO) {
-            "Valor deve ser maior que zero."
-        }
-
-        isValid = true
+//        require(name.length in 4..10) {
+//            "Nome precisa ser válido"
+//        }
+//        require(description.length in 10..20) {
+//            "Descrição precisa ser válida"
+//        }
+//        require(value > BigDecimal.ZERO) {
+//            "Valor deve ser maior que zero."
+//        }
+//
+//        isValid = true
     }
+
+
 }

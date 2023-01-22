@@ -4,10 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import app.jersonb.mysimplelist.daos.ProductDao
+import app.jersonb.mysimplelist.database.AppDatabase
 import app.jersonb.mysimplelist.databinding.ActivityProductFormBinding
 import app.jersonb.mysimplelist.dialogs.FormImageDialog
 import app.jersonb.mysimplelist.extensions.loadImage
+import app.jersonb.mysimplelist.extensions.toDto
 import app.jersonb.mysimplelist.models.Product
 
 class ProductFormActivity : AppCompatActivity() {
@@ -26,21 +27,23 @@ class ProductFormActivity : AppCompatActivity() {
 
     private fun configureAddImageButton() {
         binding.imageProduct.setOnClickListener {
-            FormImageDialog(this).show(urlDefault = url) { urlImage, image ->
-                url = urlImage
-                binding.imageProduct.loadImage(image)
-            }
+            FormImageDialog(this)
+                .show(urlDefault = url) { urlImage, image ->
+                    url = urlImage
+                    binding.imageProduct.loadImage(image)
+                }
         }
     }
 
     private fun configureSaveButton() {
         binding.buttonSave.setOnClickListener {
-            val productDao = ProductDao()
             val product = getProductFromForm()
             Log.i("ProductFormActivity", "product: $product")
 
+            val db = AppDatabase.getInstance(this)
+
             if (product != null) {
-                productDao.create(product)
+                db.create(product.toDto())
                 finish()
             }
         }

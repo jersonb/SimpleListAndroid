@@ -4,13 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
-import app.jersonb.mysimplelist.daos.ProductDao
+import app.jersonb.mysimplelist.database.AppDatabase
 import app.jersonb.mysimplelist.databinding.ActivityProductListBinding
 import app.jersonb.mysimplelist.views.ProductViewAdapter
 
 class ProductListActivity : AppCompatActivity() {
-    private val productDao = ProductDao()
-    private val adapter = ProductViewAdapter(this, products = productDao.findAll())
+    private val adapter = ProductViewAdapter(this, products = mutableListOf())
 
     private val binding by lazy {
         ActivityProductListBinding.inflate(layoutInflater)
@@ -25,7 +24,11 @@ class ProductListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        adapter.update(productDao.findAll())
+        val productsDao = AppDatabase
+            .getInstance(this)
+            .getAll()
+
+        adapter.update(productsDao)
     }
 
     private fun configureButton() {
@@ -33,7 +36,6 @@ class ProductListActivity : AppCompatActivity() {
             val intentProductForm = Intent(this, ProductFormActivity::class.java)
             startActivity(intentProductForm)
         }
-
     }
 
     private fun configureList() {
