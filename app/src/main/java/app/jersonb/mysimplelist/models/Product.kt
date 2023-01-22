@@ -1,7 +1,8 @@
 package app.jersonb.mysimplelist.models
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.*
@@ -14,7 +15,8 @@ data class Product(
     val image: String? = null
 ) : Parcelable {
 
-    private var isValid: Boolean = false
+    @IgnoredOnParcel
+    var isValid: Boolean = false
     val formattedValue:String =NumberFormat.getCurrencyInstance(Locale("pt","br")).format(value)
     constructor(name: String, description: String, value: String = "0.0", image: String?=null) : this(
         name,
