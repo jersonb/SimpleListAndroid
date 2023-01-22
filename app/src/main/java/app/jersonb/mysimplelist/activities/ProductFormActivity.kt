@@ -3,24 +3,38 @@ package app.jersonb.mysimplelist.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
-import app.jersonb.mysimplelist.R
-import app.jersonb.mysimplelist.dao.ProductDao
+import app.jersonb.mysimplelist.daos.ProductDao
+import app.jersonb.mysimplelist.databinding.ActivityProductFormBinding
+import app.jersonb.mysimplelist.dialogs.FormImageDialog
+import app.jersonb.mysimplelist.extensions.loadImage
 import app.jersonb.mysimplelist.models.Product
 
 class ProductFormActivity : AppCompatActivity() {
 
+    private val binding by lazy {
+        ActivityProductFormBinding.inflate(layoutInflater)
+    }
+    private var url: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_product_form)
-
+        setContentView(binding.root)
+        title = "Cadastrar Item"
+        configureAddImageButton()
         configureSaveButton()
     }
 
+    private fun configureAddImageButton() {
+        binding.imageProduct.setOnClickListener {
+            FormImageDialog(this).show(urlDefault = url) { urlImage, image ->
+                url = urlImage
+                binding.imageProduct.loadImage(image)
+            }
+        }
+    }
+
     private fun configureSaveButton() {
-        findViewById<Button>(R.id.button_save).setOnClickListener {
+        binding.buttonSave.setOnClickListener {
             val productDao = ProductDao()
             val product = getProductFromForm()
             Log.i("ProductFormActivity", "product: $product")
@@ -29,20 +43,20 @@ class ProductFormActivity : AppCompatActivity() {
                 productDao.create(product)
                 finish()
             }
-
         }
     }
 
     private fun getProductFromForm(): Product? {
-        val fieldName = findViewById<EditText>(R.id.input_name)
-        val fieldDescription = findViewById<EditText>(R.id.input_description)
-        val fieldValue = findViewById<EditText>(R.id.input_value)
+        val fieldName = binding.inputName
+        val fieldDescription = binding.inputDescription
+        val fieldValue = binding.inputValue
 
         return try {
             Product(
                 name = fieldName.text.toString(),
                 description = fieldDescription.text.toString(),
-                value = fieldValue.text.toString()
+                value = fieldValue.text.toString(),
+                image = url
             )
         } catch (err: Throwable) {
             Log.e("ProductFormActivity", "Error", err)

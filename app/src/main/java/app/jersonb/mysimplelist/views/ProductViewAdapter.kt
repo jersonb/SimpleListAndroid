@@ -2,11 +2,11 @@ package app.jersonb.mysimplelist.views
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.jersonb.mysimplelist.R
+import app.jersonb.mysimplelist.databinding.ProductItemBinding
+import app.jersonb.mysimplelist.extensions.loadImage
 import app.jersonb.mysimplelist.models.Product
 
 class ProductViewAdapter(
@@ -16,23 +16,28 @@ class ProductViewAdapter(
 
     private val products = products.toMutableList()
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(private val binding: ProductItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun linkTo(product: Product) {
-            val name = itemView.findViewById<TextView>(R.id.label_name)
+
+            val name = binding.labelName
             name.text = product.name
 
-            val description = itemView.findViewById<TextView>(R.id.label_description)
+            val description = binding.labelDescription
             description.text = product.description
 
-            val value = itemView.findViewById<TextView>(R.id.label_value)
-            "R$ ${product.value}".also { value.text = it }
+            val value = binding.labelValue
+            product.formattedValue.also { value.text = it }
+
+            if(product.image != null)
+                binding.imageProductItem.loadImage(product.image)
+
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(context)
-        val view = layoutInflater.inflate(R.layout.product_item, parent, false)
-        return ViewHolder(view)
+        val binding = ProductItemBinding.inflate(layoutInflater, parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

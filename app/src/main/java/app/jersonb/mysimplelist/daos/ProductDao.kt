@@ -1,6 +1,7 @@
-package app.jersonb.mysimplelist.dao
+package app.jersonb.mysimplelist.daos
 
 import app.jersonb.mysimplelist.models.Product
+
 
 class ProductDao {
 
@@ -13,6 +14,9 @@ class ProductDao {
     }
 
     companion object {
-        private val products = mutableListOf<Product>()
+        private val products = mutableListOf(
+            Product("Teste01","Produto de Teste 01", "1.99"),
+
+        )
     }
 }
