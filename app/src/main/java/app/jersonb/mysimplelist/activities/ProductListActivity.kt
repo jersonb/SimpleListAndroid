@@ -3,7 +3,6 @@ package app.jersonb.mysimplelist.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 
 import app.jersonb.mysimplelist.daos.ProductDao
 import app.jersonb.mysimplelist.databinding.ActivityProductListBinding
@@ -30,9 +29,7 @@ class ProductListActivity : AppCompatActivity() {
     }
 
     private fun configureButton() {
-
         binding.buttonAdd.setOnClickListener {
-            Log.i("ProductListActivity", "Click button add")
             val intentProductForm = Intent(this, ProductFormActivity::class.java)
             startActivity(intentProductForm)
         }
@@ -43,7 +40,11 @@ class ProductListActivity : AppCompatActivity() {
         val listItem = binding.recyclerViewItems
         listItem.adapter = adapter
         adapter.onClick = {
-            val intent = Intent(this, ProductDetailActivity::class.java)
+            val intent = Intent(
+                this, ProductDetailActivity::class.java
+            ).apply {
+                putExtra(KEY_PRODUCT, it)
+            }
             startActivity(intent)
         }
     }

@@ -1,10 +1,10 @@
 package app.jersonb.mysimplelist.views
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import app.jersonb.mysimplelist.R
 import app.jersonb.mysimplelist.databinding.ProductItemBinding
 import app.jersonb.mysimplelist.extensions.loadImage
 import app.jersonb.mysimplelist.models.Product
@@ -12,7 +12,7 @@ import app.jersonb.mysimplelist.models.Product
 class ProductViewAdapter(
     private val context: Context,
     products: List<Product>,
-    var onClick: () -> Unit = {}
+    var onClick: (product: Product) -> Unit = {}
 ) : RecyclerView.Adapter<ProductViewAdapter.ViewHolder>() {
 
     private val products = products.toMutableList()
@@ -20,15 +20,18 @@ class ProductViewAdapter(
     inner class ViewHolder(private val binding: ProductItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            itemView.setOnClickListener {
-                onClick()
+        private lateinit var product: Product
 
+        init {
+            binding.root.setOnClickListener {
+                if (::product.isInitialized) {
+                    onClick(product)
+                }
             }
         }
 
-
         fun linkTo(product: Product) {
+            this.product = product
 
             val name = binding.labelName
             name.text = product.name
@@ -39,7 +42,7 @@ class ProductViewAdapter(
             val value = binding.labelValue
             product.formattedValue.also { value.text = it }
 
-            if (product.image != null)
+            if (!product.image.isNullOrEmpty())
                 binding.imageProductItem.loadImage(product.image)
 
         }

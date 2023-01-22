@@ -1,15 +1,18 @@
 package app.jersonb.mysimplelist.models
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.*
 
+@Parcelize
 data class Product(
     val name: String,
     val description: String,
     val value: BigDecimal,
-    val image: String?
-) {
+    val image: String? = null
+) : Parcelable {
 
     private var isValid: Boolean = false
     val formattedValue:String =NumberFormat.getCurrencyInstance(Locale("pt","br")).format(value)
