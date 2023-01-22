@@ -11,12 +11,23 @@ import app.jersonb.mysimplelist.models.Product
 
 class ProductViewAdapter(
     private val context: Context,
-    products: List<Product>
+    products: List<Product>,
+    var onClick: () -> Unit = {}
 ) : RecyclerView.Adapter<ProductViewAdapter.ViewHolder>() {
 
     private val products = products.toMutableList()
 
-    class ViewHolder(private val binding: ProductItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ProductItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            itemView.setOnClickListener {
+                onClick()
+
+            }
+        }
+
+
         fun linkTo(product: Product) {
 
             val name = binding.labelName
@@ -28,7 +39,7 @@ class ProductViewAdapter(
             val value = binding.labelValue
             product.formattedValue.also { value.text = it }
 
-            if(product.image != null)
+            if (product.image != null)
                 binding.imageProductItem.loadImage(product.image)
 
         }

@@ -36,11 +36,16 @@ class ProductListActivity : AppCompatActivity() {
             val intentProductForm = Intent(this, ProductFormActivity::class.java)
             startActivity(intentProductForm)
         }
+
     }
 
     private fun configureList() {
         val listItem = binding.recyclerViewItems
         listItem.adapter = adapter
+        adapter.onClick = {
+            val intent = Intent(this, ProductDetailActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
 
