@@ -77,4 +77,8 @@ class ProductViewAdapter(
 
         notifyDataSetChanged()
     }
+
+    fun remove(product: Product) {
+        update(products.filter { it.id != product.id })
+    }
 }
