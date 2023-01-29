@@ -13,14 +13,22 @@ import app.jersonb.mysimplelist.models.Product
 abstract class AppDatabase : RoomDatabase() {
     abstract fun productDao(): ProductData
 
+
     companion object {
+        @Volatile
+        private lateinit var db: AppDatabase
+
         fun getInstance(context: Context): ProductData {
-            val db = Room.databaseBuilder(
+            if (::db.isInitialized) return db.productDao()
+
+            db = Room.databaseBuilder(
                 context,
                 AppDatabase::class.java,
                 "simple-list.db"
             ).allowMainThreadQueries()
-                .build()
+                .build().also {
+                    db = it
+                }
 
             return db.productDao()
         }

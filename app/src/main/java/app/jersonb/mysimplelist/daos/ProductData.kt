@@ -3,8 +3,8 @@ package app.jersonb.mysimplelist.daos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import app.jersonb.mysimplelist.models.Product
 
 @Dao
@@ -12,11 +12,8 @@ interface ProductData {
     @Query("SELECT * FROM product")
     fun getAll(): List<Product>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun create(vararg product: Product)
-
-    @Update
-    fun update(product: Product)
 
     @Delete
     fun delete(product: Product)

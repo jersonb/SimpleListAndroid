@@ -40,6 +40,7 @@ class ProductFormActivity : AppCompatActivity() {
             title = "Editar Item"
             val product = database.getById(productId)
             with(binding) {
+                url = product.image
                 imageProduct.loadImage(product.image)
                 inputName.setText(product.name)
                 inputDescription.setText(product.description)
@@ -47,7 +48,6 @@ class ProductFormActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun configureAddImageButton() {
         binding.imageProduct.setOnClickListener {
@@ -65,11 +65,7 @@ class ProductFormActivity : AppCompatActivity() {
             Log.i(TAG, "product: $product")
 
             if (product != null) {
-                if (product.id == 0L) {
-                    database.create(product)
-                } else {
-                    database.update(product)
-                }
+                database.create(product)
                 finish()
             }
         }
