@@ -11,6 +11,10 @@ import app.jersonb.mysimplelist.database.AppDatabase
 import app.jersonb.mysimplelist.databinding.ActivityProductDetailBinding
 import app.jersonb.mysimplelist.extensions.loadImage
 import app.jersonb.mysimplelist.models.Product
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val TAG = "ProductDetailActivity"
 
@@ -25,7 +29,7 @@ class ProductDetailActivity : AppCompatActivity() {
     private val database by lazy {
         AppDatabase.getInstance(this)
     }
-
+    private val scope = MainScope()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "Detalhes do produto"
@@ -36,12 +40,16 @@ class ProductDetailActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (productId != 0L) {
-            val product = database.getById(productId)
-            with(binding) {
-                imageProductDetail.loadImage(product.image)
-                labelProductNameDetail.text = product.name
-                labelProductDescriptionDetail.text = product.description
-                labelProductValueDetail.text = product.formattedValue
+            scope.launch {
+                val product = withContext(Dispatchers.IO) {
+                    database.getById(productId)
+                }
+                with(binding) {
+                    imageProductDetail.loadImage(product.image)
+                    labelProductNameDetail.text = product.name
+                    labelProductDescriptionDetail.text = product.description
+                    labelProductValueDetail.text = product.formattedValue
+                }
             }
         }
     }
@@ -65,8 +73,12 @@ class ProductDetailActivity : AppCompatActivity() {
                 Log.i(TAG, "onOptionsItemSelected: update ")
             }
             R.id.menu_product_remove -> {
-                val product = database.getById(productId)
-                database.delete(product)
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        val product = database.getById(productId)
+                        database.delete(product)
+                    }
+                }
                 Log.i(TAG, "onOptionsItemSelected: delete")
                 finish()
             }

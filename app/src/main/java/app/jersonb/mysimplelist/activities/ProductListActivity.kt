@@ -10,6 +10,10 @@ import app.jersonb.mysimplelist.database.AppDatabase
 import app.jersonb.mysimplelist.databinding.ActivityProductListBinding
 import app.jersonb.mysimplelist.models.Product
 import app.jersonb.mysimplelist.views.ProductViewAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val TAG = "ProductListActivity"
 
@@ -24,6 +28,7 @@ class ProductListActivity : AppCompatActivity() {
         AppDatabase.getInstance(this)
     }
 
+    private val scope = MainScope()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -35,8 +40,13 @@ class ProductListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val products = database.getAll()
-        adapter.update(products)
+        scope.launch {
+            val products = withContext(Dispatchers.IO) {
+                database.getAll()
+            }
+            adapter.update(products)
+        }
+
     }
 
     private fun configureButton() {
@@ -90,7 +100,11 @@ class ProductListActivity : AppCompatActivity() {
             .setMessage("Tem certeza que deseja deletar permanentemente o item ${it.name}")
             .setNegativeButton("Cancelar") { _, _ -> }
             .setPositiveButton("Confirmar") { d, _ ->
-                database.delete(it)
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        database.delete(it)
+                    }
+                }
                 adapter.remove(it)
             }
 

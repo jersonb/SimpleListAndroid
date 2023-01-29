@@ -9,6 +9,7 @@ import app.jersonb.mysimplelist.databinding.ActivityProductFormBinding
 import app.jersonb.mysimplelist.dialogs.FormImageDialog
 import app.jersonb.mysimplelist.extensions.loadImage
 import app.jersonb.mysimplelist.models.Product
+import kotlinx.coroutines.*
 
 private const val TAG = "ProductFormActivity"
 
@@ -25,6 +26,8 @@ class ProductFormActivity : AppCompatActivity() {
         AppDatabase.getInstance(this)
     }
 
+    private val scope = MainScope()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -38,13 +41,19 @@ class ProductFormActivity : AppCompatActivity() {
         productId = intent.getLongExtra(KEY_PRODUCT, 0L)
         if (productId != 0L) {
             title = "Editar Item"
-            val product = database.getById(productId)
-            with(binding) {
-                url = product.image
-                imageProduct.loadImage(product.image)
-                inputName.setText(product.name)
-                inputDescription.setText(product.description)
-                inputValue.setText(product.value.toPlainString())
+            scope.launch {
+
+                val product = withContext(Dispatchers.IO) {
+                    database.getById(productId)
+                }
+
+                with(binding) {
+                    url = product.image
+                    imageProduct.loadImage(product.image)
+                    inputName.setText(product.name)
+                    inputDescription.setText(product.description)
+                    inputValue.setText(product.value.toPlainString())
+                }
             }
         }
     }
@@ -65,8 +74,12 @@ class ProductFormActivity : AppCompatActivity() {
             Log.i(TAG, "product: $product")
 
             if (product != null) {
-                database.create(product)
-                finish()
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        database.create(product)
+                        finish()
+                    }
+                }
             }
         }
     }
