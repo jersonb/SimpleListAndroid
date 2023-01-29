@@ -1,16 +1,24 @@
 package app.jersonb.mysimplelist.daos
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import app.jersonb.mysimplelist.models.ProductDto
+import androidx.room.Update
+import app.jersonb.mysimplelist.models.Product
 
 @Dao
 interface ProductData {
     @Query("SELECT * FROM product")
-    fun getAll(): List<ProductDto>
+    fun getAll(): List<Product>
 
     @Insert
-    fun create(vararg product: ProductDto)
-    
+    fun create(vararg product: Product)
+
+    @Update
+    fun update(product: Product)
+
+    @Delete
+    fun delete(product: Product)
+
 }

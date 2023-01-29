@@ -3,10 +3,13 @@ package app.jersonb.mysimplelist.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 
 import app.jersonb.mysimplelist.database.AppDatabase
 import app.jersonb.mysimplelist.databinding.ActivityProductListBinding
 import app.jersonb.mysimplelist.views.ProductViewAdapter
+
+private const val TAG = "ProductListActivity"
 
 class ProductListActivity : AppCompatActivity() {
     private val adapter = ProductViewAdapter(this, products = mutableListOf())
@@ -21,6 +24,8 @@ class ProductListActivity : AppCompatActivity() {
         configureList()
         configureButton()
     }
+
+    override fun onBackPressed() {}
 
     override fun onResume() {
         super.onResume()
@@ -46,6 +51,9 @@ class ProductListActivity : AppCompatActivity() {
                 this, ProductDetailActivity::class.java
             ).apply {
                 putExtra(KEY_PRODUCT, it)
+            }
+            adapter.onLongClick = {
+                Log.i(TAG, "configureList: long clik")
             }
             startActivity(intent)
         }

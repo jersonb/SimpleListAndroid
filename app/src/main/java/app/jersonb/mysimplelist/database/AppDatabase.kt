@@ -6,9 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import app.jersonb.mysimplelist.daos.ProductData
-import app.jersonb.mysimplelist.models.ProductDto
+import app.jersonb.mysimplelist.models.Product
 
-@Database(entities = [ProductDto::class], version = 1)
+@Database(entities = [Product::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun productDao(): ProductData

@@ -1,5 +1,6 @@
 package app.jersonb.mysimplelist.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,11 +9,13 @@ import app.jersonb.mysimplelist.database.AppDatabase
 import app.jersonb.mysimplelist.databinding.ActivityProductFormBinding
 import app.jersonb.mysimplelist.dialogs.FormImageDialog
 import app.jersonb.mysimplelist.extensions.loadImage
-import app.jersonb.mysimplelist.extensions.toDto
 import app.jersonb.mysimplelist.models.Product
+
+private const val TAG = "ProductFormActivity"
 
 class ProductFormActivity : AppCompatActivity() {
 
+    private var productId = 0L
     private val binding by lazy {
         ActivityProductFormBinding.inflate(layoutInflater)
     }
@@ -23,6 +26,19 @@ class ProductFormActivity : AppCompatActivity() {
         title = "Cadastrar Item"
         configureAddImageButton()
         configureSaveButton()
+        configureUpdateProduct()
+    }
+
+    private fun configureUpdateProduct() {
+        intent.getParcelableExtra<Product>(KEY_PRODUCT)?.let { product ->
+            title = "Editar Item"
+            productId = product.id
+
+            binding.imageProduct.loadImage(product.image)
+            binding.inputName.setText(product.name)
+            binding.inputDescription.setText(product.description)
+            binding.inputValue.setText(product.value.toPlainString())
+        }
     }
 
     private fun configureAddImageButton() {
@@ -38,13 +54,22 @@ class ProductFormActivity : AppCompatActivity() {
     private fun configureSaveButton() {
         binding.buttonSave.setOnClickListener {
             val product = getProductFromForm()
-            Log.i("ProductFormActivity", "product: $product")
+            Log.i(TAG, "product: $product")
 
             val db = AppDatabase.getInstance(this)
 
             if (product != null) {
-                db.create(product.toDto())
-                finish()
+                if (product.id == 0L) {
+                    db.create(product)
+                    finish()
+                } else {
+                    db.update(product)
+                    Intent(this, ProductDetailActivity::class.java).apply {
+                        putExtra(KEY_PRODUCT, product)
+                        startActivity(this)
+
+                    }
+                }
             }
         }
     }
@@ -56,13 +81,14 @@ class ProductFormActivity : AppCompatActivity() {
 
         return try {
             Product(
+                id = productId,
                 name = fieldName.text.toString(),
                 description = fieldDescription.text.toString(),
                 value = fieldValue.text.toString(),
                 image = url
             )
         } catch (err: Throwable) {
-            Log.e("ProductFormActivity", "Error", err)
+            Log.e(TAG, "Error", err)
             Toast.makeText(this, err.message, Toast.LENGTH_LONG).show()
             return null
         }

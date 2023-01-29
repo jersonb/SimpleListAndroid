@@ -7,13 +7,15 @@ import androidx.recyclerview.widget.RecyclerView
 import app.jersonb.mysimplelist.databinding.ProductItemBinding
 import app.jersonb.mysimplelist.extensions.loadImage
 import app.jersonb.mysimplelist.models.Product
-import app.jersonb.mysimplelist.models.ProductDto
-import app.jersonb.mysimplelist.extensions.toEntity
+
+
+private const val TAG = "ProductViewAdapter"
 
 class ProductViewAdapter(
     private val context: Context,
     products: List<Product>,
-    var onClick: (product: Product) -> Unit = {}
+    var onClick: (product: Product) -> Unit = {},
+    var onLongClick: (product: Product) -> Unit = {}
 ) : RecyclerView.Adapter<ProductViewAdapter.ViewHolder>() {
 
     private val products = products.toMutableList()
@@ -29,7 +31,14 @@ class ProductViewAdapter(
                     onClick(product)
                 }
             }
+            binding.root.setOnLongClickListener {
+                if (::product.isInitialized) {
+                    onLongClick(product)
+                }
+                return@setOnLongClickListener true
+            }
         }
+
 
         fun linkTo(product: Product) {
             this.product = product
@@ -62,12 +71,9 @@ class ProductViewAdapter(
 
     override fun getItemCount(): Int = products.size
 
-    fun update(products: List<ProductDto>) {
+    fun update(products: List<Product>) {
         this.products.clear()
-        this.products.addAll(
-            products.map { productDto ->
-                productDto.toEntity()
-            })
+        this.products.addAll(products)
 
         notifyDataSetChanged()
     }
