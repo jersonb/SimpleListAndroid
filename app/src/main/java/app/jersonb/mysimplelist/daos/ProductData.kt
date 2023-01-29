@@ -9,7 +9,7 @@ import app.jersonb.mysimplelist.models.Product
 
 @Dao
 interface ProductData {
-    @Query("SELECT * FROM product")
+    @Query("SELECT * FROM product p ORDER BY p.name ASC")
     fun getAll(): List<Product>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
