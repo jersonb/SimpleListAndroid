@@ -25,10 +25,9 @@ abstract class AppDatabase : RoomDatabase() {
                 context,
                 AppDatabase::class.java,
                 "simple-list.db"
-            ).allowMainThreadQueries()
-                .build().also {
-                    db = it
-                }
+            ).build().also {
+                db = it
+            }
 
             return db.productDao()
         }
