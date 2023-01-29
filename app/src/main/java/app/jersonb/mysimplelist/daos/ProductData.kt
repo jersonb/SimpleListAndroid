@@ -21,4 +21,7 @@ interface ProductData {
     @Delete
     fun delete(product: Product)
 
+    @Query("SELECT * FROM product WHERE id = :id")
+    fun getById(id: Long): Product
+
 }

@@ -1,6 +1,5 @@
 package app.jersonb.mysimplelist.activities
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -16,10 +15,16 @@ private const val TAG = "ProductFormActivity"
 class ProductFormActivity : AppCompatActivity() {
 
     private var productId = 0L
+    private var url: String? = null
+
     private val binding by lazy {
         ActivityProductFormBinding.inflate(layoutInflater)
     }
-    private var url: String? = null
+
+    private val database by lazy {
+        AppDatabase.getInstance(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -30,16 +35,19 @@ class ProductFormActivity : AppCompatActivity() {
     }
 
     private fun configureUpdateProduct() {
-        intent.getParcelableExtra<Product>(KEY_PRODUCT)?.let { product ->
+        productId = intent.getLongExtra(KEY_PRODUCT, 0L)
+        if (productId != 0L) {
             title = "Editar Item"
-            productId = product.id
-
-            binding.imageProduct.loadImage(product.image)
-            binding.inputName.setText(product.name)
-            binding.inputDescription.setText(product.description)
-            binding.inputValue.setText(product.value.toPlainString())
+            val product = database.getById(productId)
+            with(binding) {
+                imageProduct.loadImage(product.image)
+                inputName.setText(product.name)
+                inputDescription.setText(product.description)
+                inputValue.setText(product.value.toPlainString())
+            }
         }
     }
+
 
     private fun configureAddImageButton() {
         binding.imageProduct.setOnClickListener {
@@ -56,20 +64,13 @@ class ProductFormActivity : AppCompatActivity() {
             val product = getProductFromForm()
             Log.i(TAG, "product: $product")
 
-            val db = AppDatabase.getInstance(this)
-
             if (product != null) {
                 if (product.id == 0L) {
-                    db.create(product)
-                    finish()
+                    database.create(product)
                 } else {
-                    db.update(product)
-                    Intent(this, ProductDetailActivity::class.java).apply {
-                        putExtra(KEY_PRODUCT, product)
-                        startActivity(this)
-
-                    }
+                    database.update(product)
                 }
+                finish()
             }
         }
     }

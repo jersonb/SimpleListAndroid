@@ -50,7 +50,7 @@ class ProductListActivity : AppCompatActivity() {
             val intent = Intent(
                 this, ProductDetailActivity::class.java
             ).apply {
-                putExtra(KEY_PRODUCT, it)
+                putExtra(KEY_PRODUCT, it.id)
             }
             adapter.onLongClick = {
                 Log.i(TAG, "configureList: long clik")

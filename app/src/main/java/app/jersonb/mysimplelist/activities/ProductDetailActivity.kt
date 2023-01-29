@@ -16,17 +16,27 @@ private const val TAG = "ProductDetailActivity"
 
 class ProductDetailActivity : AppCompatActivity() {
 
-    private lateinit var product: Product
+    private var productId = 0L
+
     private val binding by lazy {
         ActivityProductDetailBinding.inflate(layoutInflater)
+    }
+
+    private val database by lazy {
+        AppDatabase.getInstance(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "Detalhes do produto"
         setContentView(binding.root)
-        intent.getParcelableExtra<Product>(KEY_PRODUCT)?.let { product ->
-            this.product = product
+        productId = intent.getLongExtra(KEY_PRODUCT, 0L)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (productId != 0L) {
+            val product = database.getById(productId)
             with(binding) {
                 imageProductDetail.loadImage(product.image)
                 labelProductNameDetail.text = product.name
@@ -42,25 +52,26 @@ class ProductDetailActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (::product.isInitialized) {
-            val db = AppDatabase.getInstance(this)
-            when (item.itemId) {
 
-                R.id.menu_product_edit -> {
-                    Intent(this, ProductFormActivity::class.java).apply {
-                        putExtra(KEY_PRODUCT, product)
-                        startActivity(this)
-                    }
+        if (productId == 0L) return false
 
-                    Log.i(TAG, "onOptionsItemSelected: update ")
+        when (item.itemId) {
+            R.id.menu_product_edit -> {
+                Intent(this, ProductFormActivity::class.java).apply {
+                    putExtra(KEY_PRODUCT, productId)
+                    startActivity(this)
                 }
-                R.id.menu_product_remove -> {
-                    db.delete(product)
-                    Log.i(TAG, "onOptionsItemSelected: delete")
-                    finish()
-                }
+
+                Log.i(TAG, "onOptionsItemSelected: update ")
+            }
+            R.id.menu_product_remove -> {
+                val product = database.getById(productId)
+                database.delete(product)
+                Log.i(TAG, "onOptionsItemSelected: delete")
+                finish()
             }
         }
+
         return super.onOptionsItemSelected(item)
     }
 
